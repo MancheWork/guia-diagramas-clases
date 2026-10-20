@@ -2401,6 +2401,8 @@ svg.modo .ed-caja:hover rect.bg{stroke:#5b7fb8;stroke-width:2}
 .tall-caja rect{fill:#fff;stroke:#2F4B7C;stroke-width:1.5}
 .tall-caja text{font-size:11px;fill:#22314a}
 .tall-caja text.nom{font-weight:700;fill:#2F4B7C;font-size:12px}
+.tall-caja .tall-sep{stroke:#c7d3e2;stroke-width:1}
+.tall-caja .tall-member{font-family:Consolas,monospace;font-size:10px;fill:#22314a}
 .tall-caja.colocada{cursor:grab}
 .tall-caja.sacudiendo{animation:tall-shake .35s}
 @keyframes tall-shake{0%,100%{opacity:1}25%{opacity:.35}75%{opacity:.35}}
@@ -3270,8 +3272,14 @@ function crear(host, key, sol, frases, solDet){
   var F=function(k){ return host.querySelector('[data-f="'+k+'"]'); };
 
   function dims(c){
-    var w=Math.max(120,Math.min(300,Math.round(c.n.length*11)+36));
-    return {w:w,h:54};
+    var n = (c.a && c.a.length) ? c.a.length : 0;
+    var lineas = Math.min(n, 6);
+    var h = 36 + lineas*17 + 8;
+    if(!n) h = 40;
+    var maxL = c.n.length;
+    (c.a||[]).forEach(function(x){ if(x.length>maxL) maxL=x.length; });
+    var w = Math.max(120, Math.min(320, Math.round(maxL*7.4)+24));
+    return {w:w, h:h};
   }
   function buscar(n){ for(var i=0;i<colocadas.length;i++) if(colocadas[i].n===n) return colocadas[i]; return null; }
   function borde(c,tx,ty){
@@ -3294,7 +3302,17 @@ function crear(host, key, sol, frases, solDet){
     var d=dims(c), s="";
     s+='<g class="tall-caja colocada" data-i="'+i+'" transform="translate('+(c.x-d.w/2)+','+(c.y-d.h/2)+')">';
     s+='<rect x="0" y="0" width="'+d.w+'" height="'+d.h+'" rx="10"/>';
-    s+='<text class="nom" x="'+(d.w/2)+'" y="35" text-anchor="middle">'+esc(c.n)+'</text>';
+    s+='<text class="nom" x="'+(d.w/2)+'" y="23" text-anchor="middle">'+esc(c.n)+'</text>';
+    var miembros = c.a || [];
+    if(miembros.length){
+      s+='<line class="tall-sep" x1="0" y1="30" x2="'+d.w+'" y2="30"/>';
+      var sel=miembros.slice(0,6), extra=miembros.length-sel.length, yy=47;
+      sel.forEach(function(m){
+        s+='<text class="tall-member" x="10" y="'+yy+'" text-anchor="start">'+esc(m)+'</text>';
+        yy+=17;
+      });
+      if(extra>0) s+='<text class="tall-member" x="10" y="'+yy+'" text-anchor="start" fill="#8a97ab">+ '+extra+' m\u00e1s\u2026</text>';
+    }
     s+='</g>';
     return s;
   }
