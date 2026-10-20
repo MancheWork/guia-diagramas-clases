@@ -3206,8 +3206,8 @@ function parseSol(t){
     if(r){
       var op=r[3], tipo = op==="--"?"asoc":op==="o--"?"agr":op==="*--"?"comp":op==="<|--"?"gen":"dep";
       var a=r[1], b=r[5];
-      if(op==="<|--"){ var swap=a; a=b; b=swap; }
-      rol = (op==="<|--") ? "" : (r[6]||"");
+      if(op==="<|--"){ var _a=a; a=b; b=_a; }
+      var rol = (op==="<|--") ? "" : (r[6]||"");
       rels.push({a:a, b:b, tipo:tipo, m1:(tipo==="dep"||tipo==="gen")?"":r[2]||"", m2:(tipo==="dep"||tipo==="gen")?"":r[4]||"", rol:rol});
     }
   });
